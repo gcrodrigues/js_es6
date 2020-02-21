@@ -1,35 +1,44 @@
 class NegociacaoController{
   
     constructor(){ 
+
         let $ = document.querySelector.bind(document); //.bind() mantem associação do querySelector com o document
 
         this._form = $('.form');
         this._inputData = $('#data');
         this._inputQuantidade = $('#quantidade');
         this._inputValor = $('#valor');
+        this._listaNegociacoes = new ListaNegociacoes();
+       
+        this._negociacoesView = new NegociacoesView($('#negociacoesView'));
+        this._negociacoesView.update(this._listaNegociacoes); 
+
+        this._mensagem = new Mensagem();
+        this._mensagemView = new MensagemView($('#mensagemView'))
+        this._mensagemView.update(this._mensagem);
     }
 
     adiciona(event){    
+
         event.preventDefault();
+       this._listaNegociacoes.adiciona(this._criaNegociacao());
+       this._negociacoesView.update(this._listaNegociacoes);
 
-        //let data = new Date(this._inputData.value.replace(/-/g, ','));  RegEx
-        let data = new Date(
-            ...this._inputData.value //spread operator - cada item do constructor sera passado como um parametro
-                .split('-')
-                .map((item, indice) => item - indice % 2) //arrow function
-        ); 
-
-        let negociacao = new Negociacao(
-            data,
+       this._mensagem.texto ='Negociação adicionada com sucesso!';
+       this._mensagemView.update(this._mensagem);
+       
+       this._resetCampos();       
+    }
+ 
+    _criaNegociacao(){
+        return new Negociacao(
+            DateHelper.textoParaData(this._inputData.value),
             this._inputQuantidade.value,
-            this._inputValor.value
-        );
-    
-        console.log(negociacao);
-        this.resetCampos();
+            this._inputValor.value);
     }
 
-    resetCampos(){
+    _resetCampos(){
+
         this._form.reset();
         this._inputData.focus();
     }
