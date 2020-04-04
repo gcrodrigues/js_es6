@@ -12,7 +12,7 @@ class NegociacaoController{
         this._listaNegociacoes = new Bind(
             new ListaNegociacoes(),
             new NegociacoesView($('#negociacoesView')),
-            'adiciona', 'esvazia' 
+            'adiciona', 'esvazia' , 'ordena', 'inverteOrdem'
         );
         
         this._mensagem =new Bind(
@@ -20,20 +20,32 @@ class NegociacaoController{
             new MensagemView($('#mensagemView')),
             'texto'
         );
+        
+        this._ordemAtual = '';
     }
 
     importaNegociacoes() {
         let service = new NegociacaoService();
         
-        service.obterNegociacoesDaSemana((err, negociacoes) => {
+        
+        service.obterNegociacoes()
+            .then(negociacoes =>{
+                negociacoes
+                .forEach(negociacao => this._listaNegociacoes.adiciona(negociacao));
+                this._mensagem.texto = "Negociações importadas com sucesso."
+            })
+            .catch(erro => this._mensagem.texto = erro);
+    }
 
-            if(err){
-                this._mensagem.texto = err;
-                return;
-            }
-            negociacoes.forEach( negociacao => this._listaNegociacoes.adiciona(negociacao));
-            this._mensagem.texto = 'Negociações importadas com sucesso!';
-        });
+    ordena(coluna) {
+        
+        if(this._ordemAtual == coluna){
+            this._listaNegociacoes.inverteOrdem();
+        } else {
+            this._listaNegociacoes.ordena((a, b) => a[coluna] - b[coluna]);
+            
+        }
+        this._ordemAtual = coluna;
     }
 
     adiciona(event){    

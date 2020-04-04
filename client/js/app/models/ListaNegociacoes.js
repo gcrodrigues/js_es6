@@ -17,6 +17,14 @@ class ListaNegociacoes{
         // this._armadilha(this);
     }
 
+    ordena(criterio) {
+        this._negociacoes.sort(criterio);
+    }
+
+    inverteOrdem() {
+        this._negociacoes.reverse();
+    }
+
     get negociacoes(){
         //programação defensiva - blinda a lista de negociações
         return [].concat(this._negociacoes);
